@@ -151,7 +151,7 @@ For deployment, configure `SECRET_KEY` in your hosting provider's environment se
 
 ### 5. Run the application
 ```bash
-python app.py
+python run.py
 ```
 Open **[http://127.0.0.1:5000](http://127.0.0.1:5000)** in your browser to access the dashboard!
 
@@ -189,7 +189,7 @@ Visit `http://localhost:5000`.
 5. Set:
    - **Runtime**: `Python 3`
    - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --threads 4`
+   - **Start Command**: `gunicorn wsgi:app --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 120`
 6. Click **Deploy Web Service**. Your live site URL will be ready in 1-2 minutes!
 
 ### Option 2: Deploy to Railway
