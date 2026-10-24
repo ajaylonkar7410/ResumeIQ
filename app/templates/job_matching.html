@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Job Matching | ResumeIQ{% endblock %}
+{% block content %}
+<section class="form-card wide">
+<h1>Compare resume with a job description</h1>
+<form method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label>Select your resume
+    <select name="resume_id" required>
+      <option value="">Choose a resume</option>
+      {% for resume in resumes %}<option value="{{ resume.id }}">{{ resume.original_filename }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>Paste job description<textarea name="job_description" rows="10" required placeholder="Paste the complete job description here"></textarea></label>
+  <button class="button" type="submit">Compare</button>
+</form>
+</section>
+{% if result %}
+  {% if result.error %}<div class="flash error">{{ result.error }}</div>{% else %}
+  <section class="card">
+    <h2>Keyword coverage: {{ result.coverage }}%</h2>
+    <p class="muted">{{ result.note }}</p>
+    <h3>Skills found in both</h3>
+    {% if result.matched %}<div class="tags">{% for skill in result.matched %}<span>{{ skill }}</span>{% endfor %}</div>{% else %}<p>No overlapping skills from the current dictionary.</p>{% endif %}
+    <h3>Skills found in job description but not in resume text</h3>
+    {% if result.missing %}<div class="tags warning">{% for skill in result.missing %}<span>{{ skill }}</span>{% endfor %}</div>{% else %}<p>No missing skills detected by the current dictionary.</p>{% endif %}
+  </section>
+  {% endif %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,399 @@
+{% extends "base.html" %}
+
+{% block title %}ResumeIQ | AI-Powered Resume Analysis & ATS Optimization{% endblock %}
+
+{% block content %}
+<div class="container hero-section">
+    <div class="hero-badge">
+        <span class="badge-dot"></span> Powered by NLP & Machine Learning
+    </div>
+    <h1 class="hero-title">
+        Transform Your Resume with <span class="gradient-text">AI Intelligence</span>
+    </h1>
+    <p class="hero-subtitle">
+        Automatically extract skills, parse work history, benchmark against ATS algorithms, and score your resume in sub-seconds.
+    </p>
+
+    <!-- Key highlights bar -->
+    <div class="highlights-bar">
+        <div class="highlight-item">
+            <i class="fa-solid fa-bolt"></i>
+            <span><strong>1,200+</strong> Curated Skills</span>
+        </div>
+        <div class="highlight-item">
+            <i class="fa-solid fa-file-shield"></i>
+            <span><strong>PDF, DOCX, TXT</strong> Multi-Engine Parser</span>
+        </div>
+        <div class="highlight-item">
+            <i class="fa-solid fa-chart-line"></i>
+            <span><strong>0 - 100</strong> ATS Scoring Engine</span>
+        </div>
+        <div class="highlight-item">
+            <i class="fa-solid fa-bullseye"></i>
+            <span><strong>TF-IDF</strong> JD Keyword Match</span>
+        </div>
+    </div>
+</div>
+
+<div class="container analyzer-container">
+    <!-- Input Card -->
+    <div class="card input-card" id="inputCard">
+        <div class="card-header">
+            <div class="tab-controls">
+                <button class="tab-btn active" id="tabUploadBtn" data-target="uploadTab">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Upload Document
+                </button>
+                <button class="tab-btn" id="tabPasteBtn" data-target="pasteTab">
+                    <i class="fa-solid fa-align-left"></i> Paste Plain Text
+                </button>
+            </div>
+            <div class="sample-loader">
+                <span class="sample-label"><i class="fa-solid fa-wand-magic-sparkles"></i> Try Sample:</span>
+                <button type="button" class="btn-sample" id="loadSweSample" title="Load Senior Software Engineer Sample">
+                    SWE Sample
+                </button>
+                <button type="button" class="btn-sample" id="loadDsSample" title="Load AI & Data Scientist Sample">
+                    AI/Data Sample
+                </button>
+            </div>
+        </div>
+
+        <form id="resumeForm">
+            <!-- File Upload Tab -->
+            <div class="tab-pane active" id="uploadTab">
+                <div class="drop-zone" id="dropZone">
+                    <input type="file" id="resumeFileInput" name="resume_file" accept=".pdf,.docx,.doc,.txt" class="file-input">
+                    <div class="drop-content">
+                        <div class="drop-icon">
+                            <i class="fa-solid fa-file-arrow-up"></i>
+                        </div>
+                        <h3>Drag & drop your resume file here</h3>
+                        <p>Supports <strong>PDF, DOCX, DOC, or TXT</strong> (Max 16 MB)</p>
+                        <button type="button" class="btn btn-secondary select-file-btn" onclick="document.getElementById('resumeFileInput').click();">
+                            Browse Files
+                        </button>
+                        <div class="selected-file-info" id="selectedFileInfo" style="display: none;">
+                            <i class="fa-solid fa-file-check"></i>
+                            <span id="selectedFileName">filename.pdf</span>
+                            <button type="button" class="btn-remove-file" id="removeFileBtn" title="Remove file">&times;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paste Text Tab -->
+            <div class="tab-pane" id="pasteTab" style="display: none;">
+                <div class="textarea-wrapper">
+                    <textarea id="resumeTextarea" name="resume_text" rows="10" placeholder="Paste your complete resume text here (Summary, Skills, Work Experience, Education, Projects)..."></textarea>
+                    <div class="textarea-footer">
+                        <span id="charCount">0 characters</span>
+                        <button type="button" class="btn-text-clear" id="clearTextBtn">Clear</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Optional Job Description Match Accordion -->
+            <div class="jd-accordion">
+                <div class="jd-accordion-header" id="toggleJdBtn">
+                    <div class="jd-header-left">
+                        <i class="fa-solid fa-crosshairs"></i>
+                        <span>Optional: Benchmark against target <strong>Job Description (JD)</strong></span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down accordion-arrow" id="jdArrow"></i>
+                </div>
+                <div class="jd-accordion-body" id="jdBody" style="display: none;">
+                    <p class="jd-help-text">
+                        Paste the target job posting below to compute exact skill match percentage and identify missing ATS keywords.
+                    </p>
+                    <textarea id="jdTextarea" name="jd_text" rows="5" placeholder="Paste job description requirements and qualifications here..."></textarea>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-submit" id="submitBtn">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i> Analyze Resume Now
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-card card" id="loadingCard" style="display: none;">
+        <div class="spinner-wrapper">
+            <div class="pulse-ring"></div>
+            <div class="spinner-icon"><i class="fa-solid fa-brain"></i></div>
+        </div>
+        <h3 id="loadingStatusText">Analyzing Resume with NLP...</h3>
+        <p class="loading-sub">Extracting candidate entities, matching 1,200+ skills, and benchmarking ATS score...</p>
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="loadingProgress"></div>
+        </div>
+    </div>
+
+    <!-- Results Dashboard (Hidden by default, shown upon successful analysis) -->
+    <div class="results-dashboard" id="resultsDashboard" style="display: none;">
+        
+        <!-- Action Toolbar -->
+        <div class="results-toolbar">
+            <div class="toolbar-left">
+                <h2>Analysis <span class="gradient-text">Results</span></h2>
+                <span class="file-tag" id="resultFileTag"><i class="fa-solid fa-file-lines"></i> resume.pdf</span>
+            </div>
+            <div class="toolbar-actions">
+                <button class="btn btn-outline" id="printReportBtn" title="Print or save as PDF">
+                    <i class="fa-solid fa-print"></i> Print / PDF Report
+                </button>
+                <button class="btn btn-outline" id="downloadJsonBtn" title="Download raw extracted JSON">
+                    <i class="fa-solid fa-code"></i> Export JSON
+                </button>
+                <button class="btn btn-secondary" id="resetBtn">
+                    <i class="fa-solid fa-arrow-rotate-left"></i> Analyze Another
+                </button>
+            </div>
+        </div>
+
+        <!-- Row 1: Score & Candidate Profile -->
+        <div class="dashboard-grid grid-2">
+            <!-- Score Card -->
+            <div class="card score-card">
+                <div class="card-title">
+                    <i class="fa-solid fa-gauge-high"></i> ATS Readiness Score
+                </div>
+                <div class="score-display">
+                    <div class="score-circle-container">
+                        <svg class="score-circle" viewBox="0 0 36 36">
+                            <path class="circle-bg"
+                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                            />
+                            <path class="circle-fill" id="scoreCircleFill"
+                                stroke-dasharray="0, 100"
+                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                            />
+                        </svg>
+                        <div class="score-number-wrapper">
+                            <span class="score-number" id="totalScoreNum">0</span>
+                            <span class="score-max">/100</span>
+                        </div>
+                    </div>
+                    <div class="score-meta">
+                        <div class="grade-badge" id="gradeBadge">Grade A</div>
+                        <h4 class="grade-label" id="gradeLabel">Strong - High Interview Probability</h4>
+                        <p class="score-summary" id="scoreSummaryText">
+                            Your resume demonstrates strong technical depth and structured content.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="subscores-section">
+                    <div class="subscore-item">
+                        <div class="subscore-info">
+                            <span>Skills Depth (25 max)</span>
+                            <span class="subscore-val" id="subSkillsVal">0/25</span>
+                        </div>
+                        <div class="mini-bar"><div class="mini-bar-fill" id="barSkills" style="width: 0%"></div></div>
+                    </div>
+                    <div class="subscore-item">
+                        <div class="subscore-info">
+                            <span>Experience & Projects (25 max)</span>
+                            <span class="subscore-val" id="subExpVal">0/25</span>
+                        </div>
+                        <div class="mini-bar"><div class="mini-bar-fill" id="barExp" style="width: 0%"></div></div>
+                    </div>
+                    <div class="subscore-item">
+                        <div class="subscore-info">
+                            <span>Education & Credentials (15 max)</span>
+                            <span class="subscore-val" id="subEduVal">0/15</span>
+                        </div>
+                        <div class="mini-bar"><div class="mini-bar-fill" id="barEdu" style="width: 0%"></div></div>
+                    </div>
+                    <div class="subscore-item">
+                        <div class="subscore-info">
+                            <span>Impact & Action Verbs (15 max)</span>
+                            <span class="subscore-val" id="subImpactVal">0/15</span>
+                        </div>
+                        <div class="mini-bar"><div class="mini-bar-fill" id="barImpact" style="width: 0%"></div></div>
+                    </div>
+                    <div class="subscore-item">
+                        <div class="subscore-info">
+                            <span>Contact & Profile (10 max)</span>
+                            <span class="subscore-val" id="subContactVal">0/10</span>
+                        </div>
+                        <div class="mini-bar"><div class="mini-bar-fill" id="barContact" style="width: 0%"></div></div>
+                    </div>
+                    <div class="subscore-item">
+                        <div class="subscore-info">
+                            <span>Formatting & Density (10 max)</span>
+                            <span class="subscore-val" id="subFormatVal">0/10</span>
+                        </div>
+                        <div class="mini-bar"><div class="mini-bar-fill" id="barFormat" style="width: 0%"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Candidate Profile Card -->
+            <div class="card profile-card">
+                <div class="card-title">
+                    <i class="fa-solid fa-id-card"></i> Candidate Profile
+                </div>
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profileAvatar">
+                        <i class="fa-solid fa-user-astronaut"></i>
+                    </div>
+                    <div>
+                        <h3 class="candidate-name" id="candidateName">Candidate Name</h3>
+                        <p class="candidate-location" id="candidateLocation"><i class="fa-solid fa-location-dot"></i> Location</p>
+                    </div>
+                </div>
+
+                <div class="profile-details">
+                    <div class="profile-detail-row">
+                        <i class="fa-solid fa-envelope"></i>
+                        <span id="candidateEmail">email@example.com</span>
+                    </div>
+                    <div class="profile-detail-row">
+                        <i class="fa-solid fa-phone"></i>
+                        <span id="candidatePhone">+1 000-000-0000</span>
+                    </div>
+                    <div class="profile-links-row" id="profileLinksRow">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <span class="stat-number" id="statSkillCount">0</span>
+                        <span class="stat-title">Skills Found</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-number" id="statExpYears">0+</span>
+                        <span class="stat-title">Est. Exp Years</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-number" id="statWordCount">0</span>
+                        <span class="stat-title">Total Words</span>
+                    </div>
+                </div>
+
+                <!-- Strengths list -->
+                <div class="strengths-box">
+                    <h4><i class="fa-solid fa-circle-check"></i> Key Strengths</h4>
+                    <ul id="strengthsList" class="checked-list">
+                        <!-- Populated by JS -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Optional Job Description Match Card (Rendered if JD was provided) -->
+        <div class="card jd-match-card" id="jdMatchCard" style="display: none;">
+            <div class="card-title">
+                <i class="fa-solid fa-bullseye"></i> Job Description (JD) Benchmark Results
+            </div>
+            <div class="jd-match-layout">
+                <div class="jd-match-meter">
+                    <div class="match-percentage" id="jdMatchScore">0%</div>
+                    <div class="match-verdict" id="jdMatchVerdict">Moderate Match</div>
+                </div>
+                <div class="jd-match-details">
+                    <div class="skill-bucket">
+                        <h5><i class="fa-solid fa-check-double text-success"></i> Matching Skills in Resume (<span id="matchingSkillsCount">0</span>)</h5>
+                        <div class="pill-group" id="matchingSkillsPills"></div>
+                    </div>
+                    <div class="skill-bucket">
+                        <h5><i class="fa-solid fa-triangle-exclamation text-warning"></i> Missing Critical JD Skills (<span id="missingSkillsCount">0</span>)</h5>
+                        <div class="pill-group" id="missingSkillsPills"></div>
+                    </div>
+                    <div class="tailoring-tips" id="tailoringTipsBox">
+                        <h5><i class="fa-solid fa-lightbulb"></i> ATS Tailoring Guidance</h5>
+                        <ul id="tailoringTipsList"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categorized Skills Section -->
+        <div class="card skills-card">
+            <div class="card-header-flex">
+                <div class="card-title">
+                    <i class="fa-solid fa-microchip"></i> Identified Skills by Domain (<span id="skillsTotalCountBadge">0</span>)
+                </div>
+                <div class="category-filters" id="categoryFilters">
+                    <!-- Filter buttons generated dynamically -->
+                </div>
+            </div>
+            <div class="skills-categories-wrapper" id="skillsCategoriesContainer">
+                <!-- Dynamically generated categorized skill blocks -->
+            </div>
+        </div>
+
+        <!-- Work Experience & Projects -->
+        <div class="dashboard-grid grid-2">
+            <!-- Experience -->
+            <div class="card exp-card">
+                <div class="card-title">
+                    <i class="fa-solid fa-briefcase"></i> Work Experience
+                </div>
+                <div class="timeline" id="experienceTimeline">
+                    <!-- Experience items populated by JS -->
+                </div>
+            </div>
+
+            <!-- Projects -->
+            <div class="card projects-card">
+                <div class="card-title">
+                    <i class="fa-solid fa-laptop-code"></i> Extracted Projects
+                </div>
+                <div class="projects-list" id="projectsList">
+                    <!-- Projects populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Education & Certifications -->
+        <div class="dashboard-grid grid-2">
+            <!-- Education -->
+            <div class="card edu-card">
+                <div class="card-title">
+                    <i class="fa-solid fa-graduation-cap"></i> Education
+                </div>
+                <div class="edu-list" id="educationList">
+                    <!-- Education items populated by JS -->
+                </div>
+            </div>
+
+            <!-- Certifications -->
+            <div class="card cert-card">
+                <div class="card-title">
+                    <i class="fa-solid fa-certificate"></i> Certifications & Credentials
+                </div>
+                <div class="cert-list" id="certificationsList">
+                    <!-- Certifications items populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Recommendations & Power Verbs -->
+        <div class="card feedback-card">
+            <div class="card-title">
+                <i class="fa-solid fa-sparkles"></i> AI Optimization & ATS Improvement Recommendations
+            </div>
+            <div class="feedback-grid" id="feedbackList">
+                <!-- Feedback cards populated by JS -->
+            </div>
+        </div>
+
+        <!-- Top Keywords & Frequent Terms -->
+        <div class="card keywords-card">
+            <div class="card-title">
+                <i class="fa-solid fa-tags"></i> Top Frequency Keywords (ATS Density)
+            </div>
+            <p class="section-desc">Most prevalent terms found in your resume text:</p>
+            <div class="keywords-cloud" id="keywordsCloud">
+                <!-- Word badges populated by JS -->
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

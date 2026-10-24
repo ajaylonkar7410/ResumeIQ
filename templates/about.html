@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}ResumeIQ | Architecture, NLP Pipeline & Documentation{% endblock %}
+
+{% block content %}
+<div class="container hero-section">
+    <div class="hero-badge">
+        <span class="badge-dot"></span> System Architecture & NLP Technical Details
+    </div>
+    <h1 class="hero-title">
+        Inside <span class="gradient-text">ResumeIQ</span>
+    </h1>
+    <p class="hero-subtitle">
+        An end-to-end overview of ResumeIQ's natural language processing pipeline, tokenization rules, skill taxonomy, and scoring algorithm.
+    </p>
+</div>
+
+<div class="container about-container">
+    <!-- Pipeline Flow Card -->
+    <div class="card about-card">
+        <div class="card-title">
+            <i class="fa-solid fa-diagram-project"></i> NLP Pipeline Overview
+        </div>
+        <div class="pipeline-steps">
+            <div class="pipeline-step">
+                <div class="step-num">01</div>
+                <h4>Document Ingestion</h4>
+                <p>Multi-engine parser extracts text streams from PDF (pdfplumber / pypdf), DOCX (python-docx / XML zip parsing), and plain text.</p>
+            </div>
+            <div class="pipeline-step">
+                <div class="step-num">02</div>
+                <h4>Preprocessing & Cleaning</h4>
+                <p>Whitespace normalization, unicode cleaning, bullet point standardization, and custom token preservation (e.g. C++, .NET, Node.js).</p>
+            </div>
+            <div class="pipeline-step">
+                <div class="step-num">03</div>
+                <h4>Information Extraction</h4>
+                <p>N-gram scanning (1-gram to 4-gram) against 1,200+ skill taxonomy, regex pattern matching for contact, degrees, job titles, and metrics.</p>
+            </div>
+            <div class="pipeline-step">
+                <div class="step-num">04</div>
+                <h4>Scoring & ATS Evaluation</h4>
+                <p>Multi-factorial scoring engine (0-100) assessing contact, skills depth, work history, quantifiable impact, and formatting density.</p>
+            </div>
+            <div class="pipeline-step">
+                <div class="step-num">05</div>
+                <h4>TF-IDF JD Matcher</h4>
+                <p>Vectorizes candidate resume and target job description with Cosine Similarity and skill gap calculation.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tech Stack Grid -->
+    <div class="card about-card">
+        <div class="card-title">
+            <i class="fa-solid fa-layer-group"></i> Technologies & Architecture
+        </div>
+        <div class="tech-grid">
+            <div class="tech-card">
+                <i class="fa-brands fa-python tech-icon"></i>
+                <h4>Python 3.11+ & Flask</h4>
+                <p>Clean RESTful API and server-side controller managing file uploads, routing, and scoring pipelines.</p>
+            </div>
+            <div class="tech-card">
+                <i class="fa-solid fa-brain tech-icon"></i>
+                <h4>NLP & Text Processing</h4>
+                <p>Custom tokenization, regular expression parsers, N-gram generators, and stopword filters without external crashing dependencies.</p>
+            </div>
+            <div class="tech-card">
+                <i class="fa-solid fa-chart-simple tech-icon"></i>
+                <h4>Scikit-Learn & TF-IDF</h4>
+                <p>Term frequency-inverse document frequency vectorization and cosine similarity calculation for ATS benchmarking.</p>
+            </div>
+            <div class="tech-card">
+                <i class="fa-brands fa-html5 tech-icon"></i>
+                <h4>Modern Responsive UI</h4>
+                <p>Vanilla JavaScript, modern CSS3 variables, glassmorphic card layouts, responsive flexbox/grid, and dark/light mode.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Reference Card -->
+    <div class="card about-card">
+        <div class="card-title">
+            <i class="fa-solid fa-code"></i> RESTful API Documentation
+        </div>
+        <div class="api-docs">
+            <div class="endpoint-block">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="endpoint-path">/api/analyze</span>
+                </div>
+                <p>Parses and analyzes an uploaded resume or raw text.</p>
+                <div class="code-snippet">
+<pre><code>curl -X POST http://127.0.0.1:5000/api/analyze \
+  -F "resume_file=@my_resume.pdf" \
+  -F "jd_text=Optional job description..."</code></pre>
+                </div>
+            </div>
+
+            <div class="endpoint-block">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="endpoint-path">/api/match-jd</span>
+                </div>
+                <p>Calculates match percentage and skill gap between resume and JD.</p>
+                <div class="code-snippet">
+<pre><code>curl -X POST http://127.0.0.1:5000/api/match-jd \
+  -H "Content-Type: application/json" \
+  -d '{"resume_text": "...", "jd_text": "..."}'</code></pre>
+                </div>
+            </div>
+
+            <div class="endpoint-block">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/sample/{role}</span>
+                </div>
+                <p>Returns sample resume text (roles: <code>swe</code>, <code>data-scientist</code>).</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

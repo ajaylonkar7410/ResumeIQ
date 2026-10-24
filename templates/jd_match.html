@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block title %}ResumeIQ | Dedicated ATS Job Description Matcher{% endblock %}
+
+{% block content %}
+<div class="container hero-section">
+    <div class="hero-badge">
+        <span class="badge-dot"></span> ATS Keyword Gap & Similarity Simulator
+    </div>
+    <h1 class="hero-title">
+        ATS <span class="gradient-text">Job Matcher</span>
+    </h1>
+    <p class="hero-subtitle">
+        Compare your resume directly against any tech job posting. Discover exact skill overlaps, missing qualifications, and optimize your resume before submitting.
+    </p>
+</div>
+
+<div class="container matcher-container">
+    <div class="card matcher-input-card">
+        <div class="matcher-grid">
+            <!-- Left Side: Resume Input -->
+            <div class="matcher-column">
+                <div class="column-header">
+                    <h3><i class="fa-solid fa-file-lines"></i> 1. Your Resume</h3>
+                    <div class="quick-samples">
+                        <button type="button" class="btn-sample-mini" id="matchLoadSwe">Load SWE Sample</button>
+                        <button type="button" class="btn-sample-mini" id="matchLoadDs">Load Data Sample</button>
+                    </div>
+                </div>
+                <textarea id="matchResumeText" rows="12" placeholder="Paste your resume text here (or load a sample above)..."></textarea>
+            </div>
+
+            <!-- Right Side: Job Description Input -->
+            <div class="matcher-column">
+                <div class="column-header">
+                    <h3><i class="fa-solid fa-briefcase"></i> 2. Target Job Description</h3>
+                    <button type="button" class="btn-sample-mini" id="loadSampleJd">Load Sample Tech JD</button>
+                </div>
+                <textarea id="matchJdText" rows="12" placeholder="Paste the target job description, requirements, and qualifications here..."></textarea>
+            </div>
+        </div>
+
+        <div class="matcher-actions">
+            <button type="button" class="btn btn-primary btn-large" id="runMatchBtn">
+                <i class="fa-solid fa-bolt-lightning"></i> Calculate ATS Match Percentage
+            </button>
+        </div>
+    </div>
+
+    <!-- Match Loading Indicator -->
+    <div class="loading-card card" id="matchLoadingCard" style="display: none;">
+        <div class="spinner-wrapper">
+            <div class="pulse-ring"></div>
+            <div class="spinner-icon"><i class="fa-solid fa-crosshairs"></i></div>
+        </div>
+        <h3>Computing TF-IDF Vectors & Keyword Gaps...</h3>
+        <p class="loading-sub">Calculating Cosine Similarity and skill taxonomy alignment...</p>
+    </div>
+
+    <!-- Match Results Display -->
+    <div class="card match-results-card" id="matchResultsCard" style="display: none;">
+        <div class="match-results-header">
+            <div>
+                <h2>ATS Match <span class="gradient-text">Report</span></h2>
+                <p id="matchVerdictText" class="match-verdict-title">Strong Match</p>
+            </div>
+            <div class="overall-match-gauge">
+                <span class="gauge-num" id="overallMatchNum">0%</span>
+                <span class="gauge-label">ATS Fit Score</span>
+            </div>
+        </div>
+
+        <!-- Metric Cards -->
+        <div class="match-stats-grid">
+            <div class="stat-card">
+                <span class="stat-card-title">Skill Alignment Score</span>
+                <span class="stat-card-val text-success" id="skillMatchPct">0%</span>
+                <span class="stat-card-hint">Overlap with JD required skills</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-title">Semantic TF-IDF Similarity</span>
+                <span class="stat-card-val text-primary" id="semanticMatchPct">0%</span>
+                <span class="stat-card-hint">Cosine angle of textual vocabulary</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-title">Missing Core Skills</span>
+                <span class="stat-card-val text-warning" id="missingSkillsCountStat">0</span>
+                <span class="stat-card-hint">Keywords to incorporate</span>
+            </div>
+        </div>
+
+        <!-- Matching vs Missing Skills -->
+        <div class="dashboard-grid grid-2 skill-match-breakdown">
+            <div class="bucket-box matching-box">
+                <h4><i class="fa-solid fa-circle-check text-success"></i> Matching Skills (<span id="countMatching">0</span>)</h4>
+                <p class="bucket-hint">Skills successfully detected in your resume:</p>
+                <div class="pill-group" id="containerMatchingPills"></div>
+            </div>
+
+            <div class="bucket-box missing-box">
+                <h4><i class="fa-solid fa-circle-xmark text-danger"></i> Missing Keywords (<span id="countMissing">0</span>)</h4>
+                <p class="bucket-hint">Found in job description but not in your resume:</p>
+                <div class="pill-group" id="containerMissingPills"></div>
+            </div>
+        </div>
+
+        <!-- Tailoring Advice -->
+        <div class="tailoring-box">
+            <h4><i class="fa-solid fa-wand-magic-sparkles"></i> Recommendations to Pass the ATS Screening</h4>
+            <ul class="tips-list" id="matcherTipsList"></ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Sample Job Description for instant 1-click test
+    const sampleTechJd = `Senior Software Engineer - Cloud Platform
+Company: CloudPulse Technologies
+Location: San Francisco, CA / Remote
+
+About The Role:
+We are looking for a Senior Software Engineer to build and scale our next-generation cloud infrastructure. You will architect distributed microservices handling millions of transactions, work closely with cross-functional product teams, and lead technical design reviews.
+
+Key Responsibilities:
+• Architect, build, and deploy reliable, high-throughput microservices using Python, Go, and FastAPI.
+• Design and optimize relational databases including PostgreSQL and distributed caching using Redis.
+• Drive cloud infrastructure orchestration using AWS (EC2, ECS, S3, RDS, Lambda), Docker, and Kubernetes.
+• Build automated CI/CD deployment pipelines using GitHub Actions and Terraform.
+• Write clean, testable code with high unit test coverage (Pytest), following Agile and DevOps best practices.
+• Spearhead system design discussions and mentor junior developers.
+
+Requirements & Qualifications:
+• 4+ years of professional software engineering experience.
+• Strong proficiency in Python, JavaScript/TypeScript, or Go.
+• Deep expertise in REST APIs, GraphQL, microservices, and event-driven architecture.
+• Strong hands-on experience with Docker, Kubernetes, and AWS cloud environments.
+• Solid background in database design, indexing, and query optimization.
+• Familiarity with modern frontend frameworks (React, Next.js) is a plus.
+• Bachelor's degree in Computer Science or equivalent practical experience.`;
+
+    document.getElementById('loadSampleJd')?.addEventListener('click', () => {
+        document.getElementById('matchJdText').value = sampleTechJd;
+    });
+
+    document.getElementById('matchLoadSwe')?.addEventListener('click', async () => {
+        try {
+            const res = await fetch('/sample/swe');
+            const data = await res.json();
+            if (data.status === 'success') {
+                document.getElementById('matchResumeText').value = data.text;
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    });
+
+    document.getElementById('matchLoadDs')?.addEventListener('click', async () => {
+        try {
+            const res = await fetch('/sample/data-scientist');
+            const data = await res.json();
+            if (data.status === 'success') {
+                document.getElementById('matchResumeText').value = data.text;
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    });
+
+    // Run Match button
+    document.getElementById('runMatchBtn')?.addEventListener('click', async () => {
+        const resumeText = document.getElementById('matchResumeText').value.trim();
+        const jdText = document.getElementById('matchJdText').value.trim();
+
+        if (resumeText.length < 30) {
+            alert('Please paste a valid resume (at least 30 characters).');
+            return;
+        }
+        if (jdText.length < 30) {
+            alert('Please paste a valid job description (at least 30 characters).');
+            return;
+        }
+
+        const loadingCard = document.getElementById('matchLoadingCard');
+        const resultsCard = document.getElementById('matchResultsCard');
+        loadingCard.style.display = 'block';
+        resultsCard.style.display = 'none';
+
+        try {
+            const response = await fetch('/api/match-jd', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ resume_text: resumeText, jd_text: jdText })
+            });
+
+            const data = await response.json();
+            loadingCard.style.display = 'none';
+
+            if (data.status === 'success') {
+                const match = data.match;
+                resultsCard.style.display = 'block';
+
+                document.getElementById('overallMatchNum').innerText = `${match.match_score}%`;
+                document.getElementById('matchVerdictText').innerText = match.verdict;
+                document.getElementById('skillMatchPct').innerText = `${match.skill_match_score}%`;
+                document.getElementById('semanticMatchPct').innerText = `${match.semantic_score}%`;
+                document.getElementById('missingSkillsCountStat').innerText = match.missing_skills.length;
+
+                // Matching skills pills
+                const matchingContainer = document.getElementById('containerMatchingPills');
+                matchingContainer.innerHTML = '';
+                document.getElementById('countMatching').innerText = match.matching_skills.length;
+                if (match.matching_skills.length > 0) {
+                    match.matching_skills.forEach(s => {
+                        const pill = document.createElement('span');
+                        pill.className = 'pill-match success';
+                        pill.innerHTML = `<i class="fa-solid fa-check"></i> ${s}`;
+                        matchingContainer.appendChild(pill);
+                    });
+                } else {
+                    matchingContainer.innerHTML = '<span class="empty-text">No direct skill matches detected.</span>';
+                }
+
+                // Missing skills pills
+                const missingContainer = document.getElementById('containerMissingPills');
+                missingContainer.innerHTML = '';
+                document.getElementById('countMissing').innerText = match.missing_skills.length;
+                if (match.missing_skills.length > 0) {
+                    match.missing_skills.forEach(s => {
+                        const pill = document.createElement('span');
+                        pill.className = 'pill-match danger';
+                        pill.innerHTML = `<i class="fa-solid fa-plus"></i> ${s}`;
+                        missingContainer.appendChild(pill);
+                    });
+                } else {
+                    missingContainer.innerHTML = '<span class="empty-text text-success"><i class="fa-solid fa-check-circle"></i> Outstanding! All JD skills matched.</span>';
+                }
+
+                // Tailoring tips
+                const tipsList = document.getElementById('matcherTipsList');
+                tipsList.innerHTML = '';
+                match.tailoring_tips.forEach(t => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<i class="fa-solid fa-circle-arrow-right"></i> ${t}`;
+                    tipsList.appendChild(li);
+                });
+
+                resultsCard.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                alert(data.message || 'Error running match comparison.');
+            }
+        } catch(err) {
+            loadingCard.style.display = 'none';
+            alert('Failed to connect to ResumeIQ API.');
+            console.error(err);
+        }
+    });
+</script>
+{% endblock %}

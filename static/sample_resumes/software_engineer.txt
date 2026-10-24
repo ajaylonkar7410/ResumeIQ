@@ -1,0 +1,47 @@
+ALEXANDER CHEN
+alex.chen.dev@gmail.com | +1 (415) 555-0192 | San Francisco, CA
+linkedin.com/in/alexchen-tech | github.com/alexchen-dev | https://alexchen.dev
+
+PROFESSIONAL SUMMARY
+Results-driven Full Stack Software Engineer with 5+ years of experience designing and scaling distributed web applications and high-throughput microservices. Proven expertise in Python, Flask, FastAPI, TypeScript, React, PostgreSQL, Docker, and AWS. Spearheaded migration to event-driven architecture, reducing API latency by 42% across 1.2M daily active users.
+
+SKILLS
+• Languages: Python, JavaScript, TypeScript, Go, SQL, HTML5, CSS3, Bash
+• Frontend: React, Next.js, Redux Toolkit, Tailwind CSS, Webpack, Responsive Design
+• Backend & APIs: Flask, FastAPI, Django, Node.js, Express, REST APIs, GraphQL, gRPC, Celery
+• Cloud & DevOps: AWS (EC2, S3, RDS, Lambda, ECS), Docker, Kubernetes, CI/CD, GitHub Actions, Terraform, Linux
+• Databases: PostgreSQL, MongoDB, Redis, Elasticsearch
+• Testing & Practices: Pytest, Jest, TDD, Agile/Scrum, System Design, Microservices
+
+WORK EXPERIENCE
+Senior Software Engineer | CloudScale Systems, San Francisco, CA
+June 2022 – Present
+• Architected and deployed microservices backend in Python (FastAPI/Flask) and Go, serving 1.2M+ daily active requests with 99.98% uptime.
+• Engineered a real-time caching layer using Redis and PostgreSQL connection pooling, slashing database query latency by 45%.
+• Spearheaded containerized CI/CD deployment pipelines using Docker, Kubernetes, and GitHub Actions, cutting release cycles from 2 weeks to daily deployments.
+• Mentored 6 junior engineers on unit testing (Pytest), SOLID design principles, and code review standards.
+
+Full Stack Developer | Nexus Innovations, Austin, TX
+August 2019 – May 2022
+• Developed enterprise web applications using React, TypeScript, Node.js, and Flask, delivering 8 client-facing product modules ahead of schedule.
+• Designed and optimized PostgreSQL database schemas with indexing and normalization, improving reporting query speeds by 38%.
+• Implemented OAuth 2.0 and JWT-based authentication protocol securing over 500,000 active user accounts.
+• Automated end-to-end integration test suites with Cypress and Pytest, boosting test coverage from 55% to 88%.
+
+PROJECTS
+ResumeIQ - AI Resume Analyzer & ATS Optimizer | Python, Flask, React, NLP, Docker
+• Developed an intelligent resume analysis platform utilizing NLP tokenization, TF-IDF matching, and keyword extraction to score resumes against job descriptions.
+• Implemented semantic parsing for PDF/DOCX formats with sub-second analysis speed and 94% parsing accuracy.
+
+Distributed Task Queue Engine | Go, Redis, Docker
+• Built an asynchronous task broker handling 50,000 tasks/second with automatic retries and dead-letter queues.
+
+EDUCATION
+Bachelor of Science in Computer Science
+University of California, Berkeley (UC Berkeley) | 2015 – 2019
+• GPA: 3.8 / 4.0
+• Coursework: Data Structures & Algorithms, Distributed Systems, Database Systems, Artificial Intelligence
+
+CERTIFICATIONS
+• AWS Certified Solutions Architect – Associate (2023)
+• Certified Kubernetes Administrator (CKA)

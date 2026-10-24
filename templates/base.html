@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ResumeIQ | AI-Powered Resume Analysis & ATS Optimization{% endblock %}</title>
+    
+    <!-- Meta tags for SEO & Social Sharing -->
+    <meta name="description" content="ResumeIQ is an advanced AI resume parsing and analysis platform. Extract skills, work experience, education, score your resume, and optimize for ATS algorithms.">
+    <meta name="keywords" content="Resume Parser, AI Resume Analyzer, ATS Score, NLP, Python, Flask, Machine Learning">
+    <meta name="author" content="ResumeIQ">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Icons (FontAwesome CDN) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="theme-dark">
+    <!-- Navigation Bar -->
+    <header class="navbar-wrapper">
+        <nav class="navbar container">
+            <a href="/" class="brand-logo">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <div class="logo-text">
+                    Resume<span>IQ</span>
+                </div>
+            </a>
+
+            <div class="nav-links">
+                <a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">
+                    <i class="fa-solid fa-chart-pie"></i> Analyzer
+                </a>
+                <a href="/match" class="nav-link {% if request.path == '/match' %}active{% endif %}">
+                    <i class="fa-solid fa-bullseye"></i> ATS Job Match
+                </a>
+                <a href="/about" class="nav-link {% if request.path == '/about' %}active{% endif %}">
+                    <i class="fa-solid fa-circle-info"></i> Architecture
+                </a>
+                <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="nav-btn btn-github">
+                    <i class="fa-brands fa-github"></i> GitHub
+                </a>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light theme" title="Toggle Theme">
+                    <i class="fa-solid fa-sun"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Slot -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <div class="logo-text">
+                    Resume<span>IQ</span>
+                </div>
+                <p>AI-Powered Resume Analysis & ATS Optimization Platform built with Python, Flask, NLP & Machine Learning.</p>
+            </div>
+            <div class="footer-meta">
+                <div class="tech-pills">
+                    <span class="pill">Python</span>
+                    <span class="pill">Flask</span>
+                    <span class="pill">NLP</span>
+                    <span class="pill">Scikit-Learn</span>
+                    <span class="pill">TF-IDF</span>
+                </div>
+                <p class="copyright">© 2026 ResumeIQ. Fully working production release.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <!-- Main JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

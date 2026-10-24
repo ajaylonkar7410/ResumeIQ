@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Resume Analysis | ResumeIQ{% endblock %}
+{% block content %}
+<h1>Resume analysis</h1>
+<p class="muted">{{ resume.original_filename }}</p>
+{% if analysis %}
+<section class="score-card">
+  <p class="muted">Illustrative resume-readiness score</p>
+  <div class="metric">{{ analysis.readiness_score }}/100</div>
+  <p>This is a rule-based estimate, not an official ATS score or hiring prediction.</p>
+</section>
+<h2>Skills detected</h2>
+{% set skills = analysis.skills_json|from_json %}
+{% if skills %}<div class="tags">{% for skill in skills %}<span>{{ skill }}</span>{% endfor %}</div>{% else %}<p>No skills from the current starter dictionary were detected.</p>{% endif %}
+<h2>Suggestions</h2>
+<ul>{% for suggestion in analysis.suggestions_json|from_json %}<li>{{ suggestion }}</li>{% else %}<li>No rule-based suggestions were generated.</li>{% endfor %}</ul>
+{% endif %}
+<h2>Extracted text preview</h2>
+<pre class="text-preview">{{ resume.extracted_text[:6000] }}</pre>
+<div class="actions">
+<a class="button" href="{{ url_for('matching.match') }}">Compare with a Job</a>
+<form method="post" action="{{ url_for('resumes.delete_resume', resume_id=resume.id) }}" onsubmit="return confirm('Delete this resume and its analysis?')">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <button class="button danger" type="submit">Delete Resume</button>
+</form>
+</div>
+{% endblock %}

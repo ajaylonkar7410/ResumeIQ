@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Register | ResumeIQ{% endblock %}
+{% block content %}
+<section class="form-card">
+<h1>Create your account</h1>
+<form method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label>Full name<input name="full_name" required maxlength="150" autocomplete="name"></label>
+  <label>Email<input type="email" name="email" required maxlength="255" autocomplete="email"></label>
+  <label>Password (at least 10 characters)<input type="password" name="password" required minlength="10" autocomplete="new-password"></label>
+  <button class="button" type="submit">Register</button>
+</form>
+<p>Already registered? <a href="{{ url_for('auth.login') }}">Login</a></p>
+</section>
+{% endblock %}

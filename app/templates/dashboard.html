@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | ResumeIQ{% endblock %}
+{% block content %}
+<h1>Your dashboard</h1>
+<div class="grid three">
+  <article class="card"><p class="muted">Resumes uploaded</p><div class="metric">{{ resumes|length }}</div></article>
+  <article class="card"><p class="muted">Analyses saved</p><div class="metric">{{ analysis_count }}</div></article>
+  <article class="card"><p class="muted">Latest readiness score</p><div class="metric">{{ latest_score if latest_score is not none else "—" }}{% if latest_score is not none %}/100{% endif %}</div></article>
+</div>
+<div class="section-heading"><h2>Your resumes</h2><a class="button" href="{{ url_for('resumes.upload') }}">Upload Resume</a></div>
+{% if resumes %}
+  <div class="list">
+  {% for resume in resumes|reverse %}
+    <article class="card row">
+      <div><strong>{{ resume.original_filename }}</strong><p class="muted">Uploaded {{ resume.created_at.strftime("%Y-%m-%d %H:%M") }}</p></div>
+      <a class="button small" href="{{ url_for('resumes.view_resume', resume_id=resume.id) }}">View Analysis</a>
+    </article>
+  {% endfor %}
+  </div>
+{% else %}
+  <article class="card"><p>You have not uploaded a resume yet.</p><a href="{{ url_for('resumes.upload') }}">Upload your first resume</a></article>
+{% endif %}
+{% endblock %}

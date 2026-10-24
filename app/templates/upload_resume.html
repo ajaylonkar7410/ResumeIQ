@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Upload Resume | ResumeIQ{% endblock %}
+{% block content %}
+<section class="form-card">
+<h1>Upload a resume</h1>
+<p>Supported formats: PDF, DOCX and TXT. Maximum request size: 10 MB.</p>
+<form method="post" enctype="multipart/form-data">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label>Select resume<input type="file" name="resume" accept=".pdf,.docx,.txt" required></label>
+  <button class="button" type="submit">Upload and Analyze</button>
+</form>
+<p class="muted">Only upload documents you are authorized to process. Files are stored privately in this local development app.</p>
+</section>
+{% endblock %}
